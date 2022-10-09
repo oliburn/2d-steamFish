@@ -14,10 +14,10 @@
                         (e.key === 'ArrowDown')
                     ) && this.game.keys.indexOf(e.key) === -1){
                         this.game.keys.push(e.key);
+                } else if(e.key === ' '){
+                    this.game.player.shootTop();
                 }
-                console.log(this.game.keys);
-                // console.log(this.player.y);
-                // console.log(this.game.height-this.player.height);
+                //console.log(this.game.keys);
             });
             window.addEventListener('keyup', e => {
                 if(this.game.keys.indexOf(e.key) > -1){
@@ -26,7 +26,6 @@
                 console.log(this.game.keys);
                 console.log(this.game.player);
                 console.log(this.game.player.y);
-                // console.log(this.game.height-this.player.height);
             })
         }
 
@@ -38,7 +37,7 @@
             this.y = y;
             this.width = 10;
             this.height = 3;
-            this.speed = 3;
+            this.speed = 2;
             this.markedForDeletion = false;
         }
         update(){
@@ -47,7 +46,7 @@
         }
         draw(context){
             context.fillStyle = 'yellow';
-            fillRect(this.x, this.y, this.width, this.height);
+            context.fillRect(this.x, this.y, this.width, this.height);
         }
     }
     class Particle {
@@ -62,6 +61,7 @@
             this.y = 100;
             this.speedY = 0;
             this.maxSpeed = 3;
+            this.projectiles = [];
         }
 
         update(){
@@ -69,11 +69,27 @@
             else if ((this.game.keys.includes('ArrowDown')) && (this.game.player.y < (this.game.height - this.game.player.height))) this.speedY = this.maxSpeed;
             else this.speedY = 0;
             this.y += this.speedY;
+            //handle projectiles
+            this.projectiles.forEach(projectile => {
+                projectile.update();
+            });
+            this.projectiles = this.projectiles.filter(projectile => !projectile.markedForDeletion);
         }
         draw(context){
             context.fillStyle = 'black';
             context.fillRect(this.x, this.y, this.width, this.height);
+            this.projectiles.forEach(projectile => {
+                projectile.draw(context);
+            });
         }
+        shootTop(){
+            if(this.game.ammo >0){
+                this.projectiles.push(new Projectile(this.game, this.x + 80, this.y + 30));
+                this.game.ammo--;
+            }
+            console.log(this.projectiles);
+        }
+        
     }
     class Enemy {
         
@@ -94,6 +110,7 @@
             this.player = new Player(this);
             this.input = new InputHandler(this);
             this.keys = [];
+            this.ammo = 20;
         }
         update(){
             this.player.update();
