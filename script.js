@@ -84,7 +84,7 @@
         }
         shootTop(){
             if(this.game.ammo >0){
-                this.projectiles.push(new Projectile(this.game, this.x + 80, this.y + 30));
+                this.projectiles.push(new Projectile(this.game, this.x +  80, this.y + 30));
                 this.game.ammo--;
             }
             console.log(this.projectiles);
@@ -111,9 +111,18 @@
             this.input = new InputHandler(this);
             this.keys = [];
             this.ammo = 20;
+            this.maxAmmo = 50;
+            this.ammoTimer = 0;
+            this.ammoInterval = 500;
         }
-        update(){
+        update(deltaTime){
             this.player.update();
+            if(this.ammoTimer > this.ammoInterval){
+                if(this.ammo < this.maxAmmo) this.ammo++;
+                this.ammoTimer = 0;
+            } else {
+                this.ammoTimer += deltaTime;
+            }
         }
         draw(context){
             this.player.draw(context);
@@ -121,12 +130,16 @@
     }
 
     const game = new Game(canvas.width, canvas.height);
+    let lastTime = 0;
     // animation loop
-    function animate(){
+    function animate(timeStamp){
+        const deltaTime = timeStamp - lastTime;
+        // console.log(deltaTime);  1000 (1s) / dt = fps; in my case 1000/8.33 = 120 fps
+        lastTime = timeStamp;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        game.update();
+        game.update(deltaTime);
         game.draw(ctx);
         requestAnimationFrame(animate);
     }
-    animate();
+    animate(0);
  });
