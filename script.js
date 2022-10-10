@@ -92,8 +92,32 @@
         
     }
     class Enemy {
-        
+        constructor(game){
+            this.game = game;
+            this.x = this.game.width; // we can define the x of all enemies but not the y, because each enemy will have a different height
+            this.speedX = Math.random() * -1.5 - 0.5;
+            this.markedForDeletion = false;
+        }
+        update(){
+            this.x += this.speedX;
+            if(this.x + this.width < 0) this.markedForDeletion = true;
+        }
+        draw(context){
+            context.fillStyle = 'red';
+            context.fillRect(this.x, this.y, this.width, this.height);
+        }
     }
+    class Angler1 extends Enemy {
+        constructor(game){
+            super(game);
+            this.width = 228*0.2;
+            this.height = 169*0.2;
+            this.y = Math.random()*(this.game.height*0.9 - this.height);
+        }
+
+    }
+
+
     class Layer {
         
     }
@@ -125,10 +149,14 @@
             this.input = new InputHandler(this);
             this.ui = new UI(this);
             this.keys = [];
+            this.enemies = [];
+            this.enemyTimer = 0;
+            this.enemyInterval = 1000;
             this.ammo = 20;
             this.maxAmmo = 50;
             this.ammoTimer = 0;
             this.ammoInterval = 500;
+            this.gameOver = false;
         }
         update(deltaTime){
             this.player.update();
@@ -138,10 +166,27 @@
             } else {
                 this.ammoTimer += deltaTime;
             }
+            this.enemies.forEach(enemy =>{
+                enemy.update();
+            });
+            this.enemies = this.enemies.filter(enemy => !enemy.markedForDeletion);
+            if(this.enemyTimer > this.enemyInterval && !this.gameOver){
+                this.addEnemy();
+                this.enemyTimer = 0;
+            } else {
+                this.enemyTimer += deltaTime;
+            }
         }
         draw(context){
             this.player.draw(context);
             this.ui.draw(context);
+            this.enemies.forEach(enemy =>{
+                enemy.draw(context);
+            });
+        }
+        addEnemy(){
+            this.enemies.push(new Angler1(this)); // Angler1 expects a game arg so we pass this (because we are inside Game class now)
+            //console.log(this.enemies); // to see if enemies are adding correctly in the arrae of enemies
         }
     }
 
