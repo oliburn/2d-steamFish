@@ -97,6 +97,8 @@
             this.x = this.game.width; // we can define the x of all enemies but not the y, because each enemy will have a different height
             this.speedX = Math.random() * -1.5 - 0.5;
             this.markedForDeletion = false;
+            this.lives = 5;
+            this.score = this.lives;
         }
         update(){
             this.x += this.speedX;
@@ -105,6 +107,9 @@
         draw(context){
             context.fillStyle = 'red';
             context.fillRect(this.x, this.y, this.width, this.height);
+            context.fillStyle = 'black';
+            context.font = '20px Helvetica';
+            context.fillText(this.lives, this.x, this.y); 
         }
     }
     class Angler1 extends Enemy {
@@ -168,6 +173,19 @@
             }
             this.enemies.forEach(enemy =>{
                 enemy.update();
+                if(this.checkCollision(this.player, enemy)){
+                    enemy.markedForDeletion = true;
+                }
+                this.player.projectiles.forEach(projectile => {
+                    if(this.checkCollision(projectile, enemy)){
+                        enemy.lives--;
+                        projectile.markedForDeletion = true;
+                        if(enemy.lives <= 0){
+                            enemy.markedForDeletion = true;
+                            this.score += enemy.score;
+                        }
+                    }
+                })
             });
             this.enemies = this.enemies.filter(enemy => !enemy.markedForDeletion);
             if(this.enemyTimer > this.enemyInterval && !this.gameOver){
@@ -187,6 +205,14 @@
         addEnemy(){
             this.enemies.push(new Angler1(this)); // Angler1 expects a game arg so we pass this (because we are inside Game class now)
             //console.log(this.enemies); // to see if enemies are adding correctly in the arrae of enemies
+        }
+        checkCollision(rect1, rect2){
+            return(
+                rect1.x < rect2.x + rect2.width &&
+                rect1.x + rect1.width > rect2.x &&
+                rect1.y < rect2.y + rect2.height &&
+                rect1.height + rect1.y > rect2.y
+            )
         }
     }
 
