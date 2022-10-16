@@ -144,12 +144,15 @@
             context.shadowOffsetY = 2;
             context.shadowColor = 'black';
             context.font = this.fontSize + 'px ' + this.fontFamily;
-            //score
+            // score
             context.fillText('Score: ' + this.game.score, 20, 40);
             // ammo
             for( let i = 0; i < this.game.ammo; i++){
                 context.fillRect(20 + 5*i, 50, 3, 20);
             }
+            // timer
+            const formattedTime = (this.game.gameTime * 0.001).toFixed(1);
+            context.fillText('Timer: ' + formattedTime, 20, 100);
             // game over messages
             if(this.game.gameOver){
                 context.textAlign = 'center';
@@ -189,8 +192,12 @@
             this.gameOver = false;
             this.score = 0;
             this.winningScore = 10;
+            this.gameTime = 0; // 0 milliseconds
+            this.timeLimit = 5000; // 5 seconds
         }
         update(deltaTime){
+            if(!this.gameOver) this.gameTime += deltaTime;
+            if(this.gameTime > this.timeLimit) this.gameOver = true;
             this.player.update();
             if(this.ammoTimer > this.ammoInterval){
                 if(this.ammo < this.maxAmmo) this.ammo++;
@@ -209,7 +216,7 @@
                         projectile.markedForDeletion = true;
                         if(enemy.lives <= 0){
                             enemy.markedForDeletion = true;
-                            this.score += enemy.score;
+                            if(!this.gameOver) this.score += enemy.score;
                             if(this.score > this.winningScore) this.gameOver = true;
                         }
                     }
