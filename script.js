@@ -59,14 +59,20 @@
             this.height = 190;
             this.x = 20;
             this.y = 100;
+            this.frameX = 0; // cycle through the spreadsheet horizontally
+            this.frameY = 0; // row 0 or 1 of the spreadsheet
+            this.maxFrame = 37;
             this.speedY = 0;
             this.maxSpeed = 3;
             this.projectiles = [];
+            this.image = document.getElementById('player');
         }
 
         update(){
-            if((this.game.keys.includes('ArrowUp')) && (this.game.player.y > 0)) this.speedY = -this.maxSpeed;
-            else if ((this.game.keys.includes('ArrowDown')) && (this.game.player.y < (this.game.height - this.game.player.height))) this.speedY = this.maxSpeed;
+            if(this.game.keys.includes('ArrowUp')) //&& (this.game.player.y > 0)) 
+                                                this.speedY = -this.maxSpeed;
+            else if (this.game.keys.includes('ArrowDown')) //&& (this.game.player.y < (this.game.height - this.game.player.height))) 
+                                                this.speedY = this.maxSpeed;
             else this.speedY = 0;
             this.y += this.speedY;
             //handle projectiles
@@ -74,10 +80,23 @@
                 projectile.update();
             });
             this.projectiles = this.projectiles.filter(projectile => !projectile.markedForDeletion);
+            //sprite animation
+            if(this.frameX < this.maxFrame){
+                this.frameX++;
+            } else {
+                this.frameX = 0;
+            }
         }
         draw(context){
             context.fillStyle = 'black';
             context.fillRect(this.x, this.y, this.width, this.height);
+            context.drawImage(
+                this.image, 
+                this.frameX * this.width, 
+                this.frameY * this.height, 
+                this.width, 
+                this.height, 
+                this.x, this.y, this.width, this.height); // image, source(x,y,width,height), destination(x,y,width,height)
             this.projectiles.forEach(projectile => {
                 projectile.draw(context);
             });
