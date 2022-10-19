@@ -16,6 +16,8 @@
                         this.game.keys.push(e.key);
                 } else if(e.key === ' '){
                     this.game.player.shootTop();
+                } else if(e.key === 'd'){
+                    this.game.debug = !this.game.debug;
                 }
                 //console.log(this.game.keys);
             });
@@ -88,8 +90,8 @@
             }
         }
         draw(context){
-            context.fillStyle = 'black';
-            context.fillRect(this.x, this.y, this.width, this.height);
+            //context.fillStyle = 'black';
+            if(this.game.debug) context.strokeRect(this.x, this.y, this.width, this.height);
             context.drawImage(
                 this.image, 
                 this.frameX * this.width, 
@@ -252,6 +254,7 @@
             this.gameTime = 0; // 0 milliseconds
             this.timeLimit = 5000; // 5 seconds
             this.speed = 1;
+            this.debug = true;
         }
         update(deltaTime){
             if(!this.gameOver) this.gameTime += deltaTime;
