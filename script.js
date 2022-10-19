@@ -118,8 +118,6 @@
             this.x = this.game.width; // we can define the x of all enemies but not the y, because each enemy will have a different height
             this.speedX = Math.random() * -1.5 - 0.5;
             this.markedForDeletion = false;
-            this.lives = 5;
-            this.score = this.lives;
             this.frameX = 0; // cycle through the spreadsheet horizontally
             this.frameY = 0; // row 0 or 1 of the spreadsheet
             this.maxFrame = 37;
@@ -152,6 +150,21 @@
             this.y = Math.random()*(this.game.height*0.9 - this.height);
             this.image = document.getElementById('angler1');
             this.frameY = Math.floor(Math.random() * 3);
+            this.lives = 2;
+            this.score = this.lives;
+        }
+
+    }
+    class Angler2 extends Enemy {
+        constructor(game){
+            super(game);
+            this.width = 213;
+            this.height = 165;
+            this.y = Math.random()*(this.game.height*0.9 - this.height);
+            this.image = document.getElementById('angler2');
+            this.frameY = Math.floor(Math.random() * 2);
+            this.lives = 3;
+            this.score = this.lives;
         }
 
     }
@@ -265,7 +278,7 @@
             this.score = 0;
             this.winningScore = 10;
             this.gameTime = 0; // 0 milliseconds
-            this.timeLimit = 5000; // 5 seconds
+            this.timeLimit = 15000;
             this.speed = 1;
             this.debug = true;
         }
@@ -316,7 +329,9 @@
             this.background.layer4.draw(context);
         }
         addEnemy(){
-            this.enemies.push(new Angler1(this)); // Angler1 expects a game arg so we pass this (because we are inside Game class now)
+            const randomize = Math.random();
+            if(randomize < 0.5) this.enemies.push(new Angler1(this)); // Angler1 expects a game arg so we pass this (because we are inside Game class now)
+            else this.enemies.push(new Angler2(this));
             //console.log(this.enemies); // to see if enemies are adding correctly in the arrae of enemies
         }
         checkCollision(rect1, rect2){
