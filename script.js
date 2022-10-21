@@ -74,7 +74,7 @@
         update(){
             this.angle += this.va;
             this.speedY += this.gravity;
-            this.x -= this.speedX;
+            this.x -= this.speedX + this.game.speed;
             this.y += this.speedY;
             if(this.y > this.game.height + this.size || this.x < 0 - this.size) this.markedForDeletion = true;
             if(this.y > this.game.height - this.bottomBounceBoundary && this.bounced < 2){
@@ -83,11 +83,15 @@
             }
         }
         draw(context){
+            context.save();
+            context.translate(this.x, this.y);
+            context.rotate(this.angle);
             context.drawImage(
                 this.image, 
                 this.frameX * this.spriteSize, this.frameY * this.spriteSize, this.spriteSize, this.spriteSize, //source
-                this.x, this.y, this.size, this.size // destionation 
+                this.size * -0.5, this.size * -0.5, this.size, this.size // destionation 
                 )
+            context.restore();
         }
     }
     class Player {
